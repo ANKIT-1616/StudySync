@@ -1,0 +1,22 @@
+# Java compiled files
+
+target/
+*.class
+
+# Local database files
+
+data/
+*.db
+*.mv.db
+*.trace.db
+
+# IDE files
+
+.idea/
+.vscode/
+*.iml
+
+# Operating system files
+
+.DS_Store
+Thumbs.db
