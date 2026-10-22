@@ -5,6 +5,7 @@ import com.studysync.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 
@@ -18,31 +19,40 @@ public class StudyPlanService {
     }
 
     public List<Task> generateRebalancedPlan() {
+        LocalDate today = LocalDate.now();
 
-        List<Task> pendingTasks = taskRepository.findAll()
+        return taskRepository.findAll()
                 .stream()
                 .filter(task -> !task.isCompleted())
                 .sorted(
-                    Comparator
-                        .comparingInt(this::priorityScore)
-                        .reversed()
-                        .thenComparing(Task::getDeadline)
+                        Comparator
+                                .comparingInt((Task task) ->
+                                        calculatePriorityScore(task, today))
+                                .reversed()
+                                .thenComparing(Task::getDeadline)
                 )
                 .toList();
-
-        return pendingTasks;
     }
 
-    private int priorityScore(Task task) {
+    private int calculatePriorityScore(Task task, LocalDate today) {
         int score = switch (task.getPriority().toUpperCase()) {
-            case "HIGH" -> 3;
-            case "MEDIUM" -> 2;
-            case "LOW" -> 1;
+            case "HIGH" -> 30;
+            case "MEDIUM" -> 20;
+            case "LOW" -> 10;
             default -> 0;
         };
 
-        if (task.getDeadline().isBefore(LocalDate.now().plusDays(2))) {
-            score += 2;
+        long daysRemaining = ChronoUnit.DAYS.between(
+                today, task.getDeadline());
+
+        if (daysRemaining < 0) {
+            score += 40;
+        } else if (daysRemaining <= 1) {
+            score += 30;
+        } else if (daysRemaining <= 3) {
+            score += 20;
+        } else if (daysRemaining <= 7) {
+            score += 10;
         }
 
         return score;
