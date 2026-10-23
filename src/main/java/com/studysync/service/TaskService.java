@@ -1,5 +1,6 @@
 package com.studysync.service;
 
+import com.studysync.exception.TaskNotFoundException;
 import com.studysync.model.Task;
 import com.studysync.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,7 @@ public class TaskService {
 
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Task not found with ID: " + id));
+                .orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     public Task updateTask(Long id, Task updatedTask) {
