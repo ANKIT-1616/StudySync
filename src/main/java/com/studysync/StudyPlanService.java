@@ -29,32 +29,54 @@ public class StudyPlanService {
                                 .comparingInt((Task task) ->
                                         calculatePriorityScore(task, today))
                                 .reversed()
-                                .thenComparing(Task::getDeadline)
+                                .thenComparing(
+                                        Task::getDeadline,
+                                        Comparator.nullsLast(
+                                                Comparator.naturalOrder()
+                                        )
+                                )
                 )
                 .toList();
     }
 
     private int calculatePriorityScore(Task task, LocalDate today) {
-        int score = switch (task.getPriority().toUpperCase()) {
-            case "HIGH" -> 30;
-            case "MEDIUM" -> 20;
-            case "LOW" -> 10;
-            default -> 0;
-        };
 
-        long daysRemaining = ChronoUnit.DAYS.between(
-                today, task.getDeadline());
+        int score = 0;
 
-        if (daysRemaining < 0) {
-            score += 40;
-        } else if (daysRemaining <= 1) {
-            score += 30;
-        } else if (daysRemaining <= 3) {
-            score += 20;
-        } else if (daysRemaining <= 7) {
-            score += 10;
+        // Importance score
+        String priority = task.getPriority();
+
+        if (priority != null) {
+            score += switch (priority.toUpperCase()) {
+                case "HIGH" -> 30;
+                case "MEDIUM" -> 20;
+                case "LOW" -> 10;
+                default -> 0;
+            };
+        }
+
+        // Deadline urgency score
+        LocalDate deadline = task.getDeadline();
+
+        if (deadline != null) {
+            long daysRemaining = ChronoUnit.DAYS.between(
+                    today, deadline
+            );
+
+            if (daysRemaining < 0) {
+                score += 50; // Overdue
+            } else if (daysRemaining == 0) {
+                score += 40; // Due today
+            } else if (daysRemaining == 1) {
+                score += 30; // Due tomorrow
+            } else if (daysRemaining <= 3) {
+                score += 20; // Due within three days
+            } else if (daysRemaining <= 7) {
+                score += 10; // Due within a week
+            }
         }
 
         return score;
     }
 }
+
