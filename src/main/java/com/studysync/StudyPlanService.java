@@ -78,5 +78,14 @@ public class StudyPlanService {
 
         return score;
     }
-}
+public StudyPlanProposal generateProposal(String reason) {
+    List<Task> proposedTasks = generateRebalancedPlan();
+
+    return new StudyPlanProposal(
+            LocalDate.now(),
+            reason,
+            proposedTasks.size(),
+            proposedTasks
+    );
+}}
 
