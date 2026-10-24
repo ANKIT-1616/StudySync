@@ -18,13 +18,8 @@ The project combines a Java Spring Boot backend with a responsive HTML, CSS, and
 
 ### 2. Smart Study Plan
 
-* Generate a revised study plan for unfinished tasks.
-* Provide a reason for requesting a revised plan, such as missing a study session.
-* Prioritize tasks using their priority level and deadline urgency.
-* Review the proposed task order before making a decision.
-* Accept or reject a proposal through the interface.
+**Important:** Accepting a study plan sends a request to the backend, which saves the proposed task order in the database. Rejecting a proposal simply dismisses it without saving changes. The application does not automatically change task deadlines or study schedules.
 
-**Important:** Accepting or rejecting a proposal currently updates the interface only. It does not save the decision to the database or automatically reschedule existing tasks.
 
 ### 3. Progress Dashboard
 
