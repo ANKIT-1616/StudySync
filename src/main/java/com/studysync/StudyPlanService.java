@@ -40,10 +40,7 @@ public class StudyPlanService {
     }
 
     private int calculatePriorityScore(Task task, LocalDate today) {
-
         int score = 0;
-
-        // Importance score
         String priority = task.getPriority();
 
         if (priority != null) {
@@ -55,37 +52,45 @@ public class StudyPlanService {
             };
         }
 
-        // Deadline urgency score
         LocalDate deadline = task.getDeadline();
 
         if (deadline != null) {
-            long daysRemaining = ChronoUnit.DAYS.between(
-                    today, deadline
-            );
+            long daysRemaining = ChronoUnit.DAYS.between(today, deadline);
 
             if (daysRemaining < 0) {
-                score += 50; // Overdue
+                score += 50;
             } else if (daysRemaining == 0) {
-                score += 40; // Due today
+                score += 40;
             } else if (daysRemaining == 1) {
-                score += 30; // Due tomorrow
+                score += 30;
             } else if (daysRemaining <= 3) {
-                score += 20; // Due within three days
+                score += 20;
             } else if (daysRemaining <= 7) {
-                score += 10; // Due within a week
+                score += 10;
             }
         }
 
         return score;
     }
-public StudyPlanProposal generateProposal(String reason) {
-    List<Task> proposedTasks = generateRebalancedPlan();
 
-    return new StudyPlanProposal(
-            LocalDate.now(),
-            reason,
-            proposedTasks.size(),
-            proposedTasks
-    );
-}}
+    public StudyPlanProposal generateProposal(String reason) {
+        List<Task> proposedTasks = generateRebalancedPlan();
 
+        return new StudyPlanProposal(
+                LocalDate.now(),
+                reason,
+                proposedTasks.size(),
+                proposedTasks
+        );
+    }
+
+    public List<Task> acceptStudyPlan() {
+        List<Task> proposedTasks = generateRebalancedPlan();
+
+        for (int i = 0; i < proposedTasks.size(); i++) {
+            proposedTasks.get(i).setPlanOrder(i + 1);
+        }
+
+        return taskRepository.saveAll(proposedTasks);
+    }
+}

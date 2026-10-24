@@ -1642,18 +1642,52 @@
                 </div>
             `;
 
-            const acceptButton =
-                document.getElementById("acceptProposalButton");
+          const acceptButton =
+    document.getElementById("acceptProposalButton");
 
-            const rejectButton =
-                document.getElementById("rejectProposalButton");
+if (acceptButton) {
+    acceptButton.addEventListener("click", async function () {
+        const result = document.getElementById("studyPlanResult");
 
-            if (acceptButton) {
-                acceptButton.addEventListener("click", function () {
-                    proposalStatus = "accepted";
-                    renderProposal();
-                });
+        acceptButton.disabled = true;
+        acceptButton.textContent = "Saving plan...";
+
+        try {
+            const response = await fetch("/api/study-plan/accept", {
+                method: "POST"
+            });
+
+            if (!response.ok) {
+                throw new Error("Unable to save the study plan.");
             }
+
+            const savedTasks = await response.json();
+
+            proposalStatus = "accepted";
+
+            result.insertAdjacentHTML(
+                "beforeend",
+                `<div class="status-message accepted">
+                    <strong>✓ Study plan saved successfully!</strong>
+                    <p>${savedTasks.length} unfinished tasks saved with their plan order.</p>
+                </div>`
+            );
+
+            acceptButton.textContent = "✓ Plan Saved";
+        } catch (error) {
+            result.insertAdjacentHTML(
+                "beforeend",
+                `<div class="status-message">
+                    <strong>Could not save the plan.</strong>
+                    <p>Please try again. ${escapeHtml(error.message)}</p>
+                </div>`
+            );
+
+            acceptButton.disabled = false;
+            acceptButton.textContent = "✓ Accept Proposal";
+        }
+    });
+} 
 
             if (rejectButton) {
                 rejectButton.addEventListener("click", function () {

@@ -26,6 +26,7 @@ public class Task {
     private String priority;
 
     private boolean completed = false;
+    private Integer planOrder;
 
     public Task() {
     }
@@ -80,5 +81,12 @@ public class Task {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
-    }
+    }public Integer getPlanOrder() {
+    return planOrder;
+}
+
+public void setPlanOrder(Integer planOrder) {
+    this.planOrder = planOrder;
+}
+
 }
