@@ -728,7 +728,7 @@
     const proposalTasks = document.getElementById("proposalTasks");
 
     const acceptButton = document.getElementById("acceptButton");
-    const rejectButton = document.getElementById("rejectButton");
+    const rejectButtonElement = document.getElementById("rejectButton");
 
     let currentProposal = null;
     let currentTasks = [];
@@ -1143,7 +1143,7 @@
         }
 
         acceptButton.disabled = true;
-        rejectButton.disabled = true;
+        rejectButtonElement.disabled = true;
 
         try {
             await apiRequest(ACCEPT_PLAN_API, {
@@ -1168,12 +1168,12 @@
             );
         } finally {
             acceptButton.disabled = false;
-            rejectButton.disabled = false;
+            rejectButtonElement.disabled = false;
         }
     });
 
     // Reject only dismisses the proposal. It does not change saved tasks.
-    rejectButton.addEventListener("click", () => {
+    rejectButtonElement.addEventListener("click", () => {
         currentProposal = null;
         planResult.hidden = true;
 
